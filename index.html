@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -54,8 +55,8 @@ nav.scrolled{background:rgba(4,6,11,.92);backdrop-filter:blur(30px) saturate(1.5
 .nav-links a:hover{color:var(--text)}
 .nav-links a:hover .nav-line{transform:scaleX(1);transform-origin:left}
 
-/* ─── PARTICLES CANVAS ─── */
-#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+/* ─── THREE.JS 3D SCENE ─── */
+#three-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5}
 
 /* ─── HERO 3D PARALLAX ─── */
 .hero{min-height:100vh;position:relative;display:flex;align-items:center;padding:0 6%;overflow:hidden;perspective:1200px;transform-style:preserve-3d}
@@ -134,7 +135,7 @@ nav.scrolled{background:rgba(4,6,11,.92);backdrop-filter:blur(30px) saturate(1.5
 .hero-tag{display:inline-flex;align-items:center;gap:.6rem;padding:.5rem 1.2rem;border-radius:50px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan);margin-bottom:2rem;opacity:0;transform:translateY(30px)}
 .hero-tag .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 2s infinite}
 
-.hero h1{font-family:'Space Grotesk','Syne',sans-serif;font-size:clamp(3.5rem,8vw,7rem);font-weight:700;line-height:.95;letter-spacing:-.04em;opacity:0}
+.hero h1{font-family:'Space Grotesk','Syne',sans-serif;font-size:clamp(2.8rem,6.5vw,5.5rem);font-weight:700;line-height:.95;letter-spacing:-.04em;opacity:0}
 .hero h1 .line{display:block;overflow:hidden}
 .hero h1 .line-inner{display:block;transform:translateY(110%)}
 .hero h1 .accent{background:linear-gradient(135deg,var(--cyan) 0%,var(--green) 50%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;animation:gradShift 4s ease-in-out infinite}
@@ -309,8 +310,8 @@ footer span{color:var(--cyan)}
 <div class="cursor" id="cursor"></div>
 <div class="cursor-dot" id="cursorDot"></div>
 
-<!-- PARTICLES -->
-<canvas id="particles"></canvas>
+<!-- THREE.JS 3D SCENE -->
+<div id="three-canvas"></div>
 
 <!-- NAV -->
 <nav id="nav">
@@ -503,11 +504,160 @@ document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
 (function ac(){cx+=(mx-cx)*.15;cy+=(my-cy)*.15;cursor.style.left=cx+'px';cursor.style.top=cy+'px';cursorDot.style.left=mx+'px';cursorDot.style.top=my+'px';requestAnimationFrame(ac)})();
 document.querySelectorAll('a,.btn-glow,.exp-card,.project-card,.skill-tile,.comp-tag,.contact-card').forEach(el=>{el.addEventListener('mouseenter',()=>cursor.classList.add('hovering'));el.addEventListener('mouseleave',()=>cursor.classList.remove('hovering'))});
 
-/* ── PARTICLES ── */
-const cvs=document.getElementById('particles'),ctx=cvs.getContext('2d');let W,H,pts=[];
-function rc(){W=cvs.width=innerWidth;H=cvs.height=innerHeight}rc();addEventListener('resize',rc);
-for(let i=0;i<80;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,o:Math.random()*.3+.1});
-(function dp(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(77,201,246,${p.o*.6})`;ctx.fill()});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<150){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(77,201,246,${.025*(1-d/150)})`;ctx.lineWidth=.5;ctx.stroke()}}requestAnimationFrame(dp)})();
+/* ── THREE.JS 3D SCENE ── */
+(function init3D(){
+  const container=document.getElementById('three-canvas');
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,1000);
+  camera.position.z=45;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setSize(innerWidth,innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setClearColor(0x000000,0);
+  container.appendChild(renderer.domElement);
+
+  // ── NODES (glowing spheres — representing pods/services) ──
+  const nodeCount=60;
+  const nodeGeo=new THREE.SphereGeometry(.08,8,8);
+  const nodes=[];
+  const nodePositions=[];
+
+  const colors=[
+    new THREE.Color(0x4dc9f6), // cyan
+    new THREE.Color(0x8b6cc1), // purple
+    new THREE.Color(0x3ecf8e), // green
+    new THREE.Color(0xd4915e), // orange
+  ];
+
+  for(let i=0;i<nodeCount;i++){
+    const mat=new THREE.MeshBasicMaterial({color:colors[i%4],transparent:true,opacity:.35});
+    const mesh=new THREE.Mesh(nodeGeo,mat);
+    mesh.position.set(
+      (Math.random()-.5)*40,
+      (Math.random()-.5)*25,
+      (Math.random()-.5)*20
+    );
+    mesh.userData={
+      basePos:mesh.position.clone(),
+      speed:.3+Math.random()*.5,
+      offset:Math.random()*Math.PI*2,
+      amplitude:.5+Math.random()*1.5
+    };
+    scene.add(mesh);
+    nodes.push(mesh);
+    nodePositions.push(mesh.position);
+  }
+
+  // ── CONNECTION LINES between nearby nodes ──
+  const lineMat=new THREE.LineBasicMaterial({color:0x4dc9f6,transparent:true,opacity:.06});
+  const lineGroup=new THREE.Group();
+  scene.add(lineGroup);
+
+  function updateLines(){
+    // Clear old lines
+    while(lineGroup.children.length)lineGroup.remove(lineGroup.children[0]);
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const d=nodes[i].position.distanceTo(nodes[j].position);
+        if(d<8){
+          const geo=new THREE.BufferGeometry().setFromPoints([nodes[i].position,nodes[j].position]);
+          const opacity=.06*(1-d/8);
+          const mat=new THREE.LineBasicMaterial({color:0x4dc9f6,transparent:true,opacity:opacity});
+          lineGroup.add(new THREE.Line(geo,mat));
+        }
+      }
+    }
+  }
+
+  // ── LARGE ORBITAL RINGS ──
+  const ringGeo1=new THREE.RingGeometry(14,14.05,128);
+  const ringMat1=new THREE.MeshBasicMaterial({color:0x4dc9f6,transparent:true,opacity:.08,side:THREE.DoubleSide});
+  const ring1=new THREE.Mesh(ringGeo1,ringMat1);
+  ring1.rotation.x=Math.PI*.4;
+  scene.add(ring1);
+
+  const ringGeo2=new THREE.RingGeometry(18,18.04,128);
+  const ringMat2=new THREE.MeshBasicMaterial({color:0x8b6cc1,transparent:true,opacity:.05,side:THREE.DoubleSide});
+  const ring2=new THREE.Mesh(ringGeo2,ringMat2);
+  ring2.rotation.x=Math.PI*.6;
+  ring2.rotation.y=Math.PI*.3;
+  scene.add(ring2);
+
+  const ringGeo3=new THREE.RingGeometry(22,22.03,128);
+  const ringMat3=new THREE.MeshBasicMaterial({color:0x3ecf8e,transparent:true,opacity:.03,side:THREE.DoubleSide});
+  const ring3=new THREE.Mesh(ringGeo3,ringMat3);
+  ring3.rotation.x=Math.PI*.2;
+  ring3.rotation.z=Math.PI*.4;
+  scene.add(ring3);
+
+  // ── STAR FIELD (distant particles) ──
+  const starCount=300;
+  const starGeo=new THREE.BufferGeometry();
+  const starPos=new Float32Array(starCount*3);
+  for(let i=0;i<starCount*3;i+=3){
+    starPos[i]=(Math.random()-.5)*100;
+    starPos[i+1]=(Math.random()-.5)*60;
+    starPos[i+2]=(Math.random()-.5)*80-20;
+  }
+  starGeo.setAttribute('position',new THREE.BufferAttribute(starPos,3));
+  const starMat=new THREE.PointsMaterial({color:0x4dc9f6,size:.08,transparent:true,opacity:.3});
+  scene.add(new THREE.Points(starGeo,starMat));
+
+  // ── MOUSE TRACKING ──
+  let mouseX=0,mouseY=0;
+  document.addEventListener('mousemove',e=>{
+    mouseX=(e.clientX/innerWidth-.5)*2;
+    mouseY=(e.clientY/innerHeight-.5)*2;
+  });
+
+  // ── RESIZE ──
+  addEventListener('resize',()=>{
+    camera.aspect=innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth,innerHeight);
+  });
+
+  // ── SCROLL OPACITY — fade scene as user scrolls down ──
+  let scrollFade=1;
+  addEventListener('scroll',()=>{
+    scrollFade=Math.max(0,1-scrollY/(innerHeight*.8));
+    container.style.opacity=scrollFade;
+  });
+
+  // ── ANIMATION LOOP ──
+  let frame=0;
+  let lineTimer=0;
+  function animate(){
+    requestAnimationFrame(animate);
+    frame+=.005;
+    lineTimer++;
+
+    // Animate nodes (gentle floating)
+    nodes.forEach(n=>{
+      const d=n.userData;
+      n.position.x=d.basePos.x+Math.sin(frame*d.speed+d.offset)*d.amplitude;
+      n.position.y=d.basePos.y+Math.cos(frame*d.speed*1.3+d.offset)*d.amplitude*.7;
+      n.position.z=d.basePos.z+Math.sin(frame*d.speed*.8+d.offset)*d.amplitude*.5;
+    });
+
+    // Update connection lines every 30 frames (perf)
+    if(lineTimer%30===0)updateLines();
+
+    // Rotate rings slowly
+    ring1.rotation.z+=.001;
+    ring2.rotation.z-=.0008;
+    ring3.rotation.y+=.0005;
+
+    // Camera reacts to mouse (subtle)
+    camera.position.x+=(mouseX*3-camera.position.x)*.02;
+    camera.position.y+=(-mouseY*2-camera.position.y)*.02;
+    camera.lookAt(0,0,0);
+
+    renderer.render(scene,camera);
+  }
+  animate();
+  updateLines();
+})();
 
 /* ── HERO REVEAL (GSAP) ── */
 function heroReveal(){
