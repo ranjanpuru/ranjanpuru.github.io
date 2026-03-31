@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Puru Ranjan — DevOps Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#020204;--bg2:#06060a;--bg3:#0a0a10;
+  --surface:rgba(8,8,14,0.8);
+  --cyan:#4dc9f6;--cyan2:#3a9cc0;--cyan-glow:rgba(77,201,246,0.1);
+  --green:#3ecf8e;--green-glow:rgba(62,207,142,0.08);
+  --purple:#8b6cc1;--purple-glow:rgba(139,108,193,0.08);
+  --orange:#d4915e;--red:#c44d5e;
+  --text:#d8dce6;--text2:#6b7d94;--text3:#3a4860;
+  --glass:rgba(6,6,12,0.7);--glass-border:rgba(77,201,246,0.06);
+  --gold:rgba(200,170,110,.12);
+}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--cyan2) var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;overflow-x:hidden;cursor:none}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--cyan2);border-radius:2px}
+
+/* ─── CUSTOM CURSOR ─── */
+.cursor{position:fixed;width:20px;height:20px;border:2px solid var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .15s,opacity .15s,width .15s,height .15s,border-color .15s;transform:translate(-50%,-50%);mix-blend-mode:difference}
+.cursor-dot{position:fixed;width:5px;height:5px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .08s}
+.cursor.hovering{width:50px;height:50px;border-color:var(--green)}
+
+/* ─── PRELOADER ─── */
+.preloader{position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+.preloader.done{opacity:0;visibility:hidden;pointer-events:none}
+.preloader-text{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--cyan);overflow:hidden;white-space:nowrap}
+.preloader-bar{width:200px;height:2px;background:var(--bg3);border-radius:1px;margin-top:1.5rem;overflow:hidden}
+.preloader-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));width:0;border-radius:1px;transition:width .1s}
+.preloader-percent{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);margin-top:.5rem}
+
+/* ─── MAGNETIC NAV ─── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 3rem;display:flex;justify-content:space-between;align-items:center;transition:all .4s cubic-bezier(.4,0,.2,1)}
+nav.scrolled{background:rgba(4,6,11,.92);backdrop-filter:blur(30px) saturate(1.5);border-bottom:1px solid var(--glass-border)}
+.nav-logo{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.nav-logo .bracket{color:var(--cyan)}
+.nav-logo .name{color:var(--text)}
+.nav-logo .ext{color:var(--text3)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:.8rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;position:relative;padding:.25rem 0;transition:color .3s}
+.nav-links a .nav-line{position:absolute;bottom:0;left:0;width:100%;height:1px;background:var(--cyan);transform:scaleX(0);transform-origin:right;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover .nav-line{transform:scaleX(1);transform-origin:left}
+
+/* ─── PARTICLES CANVAS ─── */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* ─── HERO 3D PARALLAX ─── */
+.hero{min-height:100vh;position:relative;display:flex;align-items:center;padding:0 6%;overflow:hidden;perspective:1200px;transform-style:preserve-3d}
+.hero-bg-grad{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(77,201,246,.03),transparent 60%),radial-gradient(ellipse 60% 50% at 20% 70%,rgba(139,108,193,.02),transparent 50%),radial-gradient(ellipse 100% 80% at 50% 100%,rgba(200,170,110,.02),transparent 50%)}
+.hero-content{position:relative;z-index:5;flex:1;max-width:650px}
+.hero-avatar-wrap{position:relative;z-index:5;flex:0 0 auto;margin-left:auto}
+
+/* 3D Floating infrastructure elements */
+.hero-3d-layer{position:absolute;inset:0;pointer-events:none;transform-style:preserve-3d}
+
+/* Floating cards — glassmorphic HUD panels */
+.float-panel{position:absolute;background:rgba(8,16,30,.5);backdrop-filter:blur(12px);border:1px solid rgba(0,229,255,.1);border-radius:10px;padding:.8rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text3);line-height:1.7;box-shadow:0 10px 40px rgba(0,0,0,.3);will-change:transform;transition:transform .1s}
+.float-panel .fp-header{color:var(--cyan);font-size:.5rem;text-transform:uppercase;letter-spacing:.15em;margin-bottom:.3rem;display:flex;align-items:center;gap:.4rem}
+.float-panel .fp-dot{width:4px;height:4px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+.float-panel .fp-val{color:var(--text2)}
+.float-panel .fp-bar{width:100%;height:2px;background:var(--glass-border);border-radius:1px;margin-top:.3rem;overflow:hidden}
+.float-panel .fp-bar-fill{height:100%;border-radius:1px;animation:barPulse 3s ease-in-out infinite}
+@keyframes barPulse{0%,100%{width:60%}50%{width:95%}}
+.float-panel{opacity:.35;font-size:.48rem;padding:.5rem .7rem;transform:scale(.85)}
+.float-panel:hover{opacity:.6}
+.fp1{top:5%;left:-1%;animation:floatSlow 8s ease-in-out infinite}
+.fp2{top:3%;right:1%;animation:floatSlow 10s ease-in-out 1s infinite}
+.fp3{bottom:8%;left:0%;animation:floatSlow 9s ease-in-out 2s infinite}
+.fp4{bottom:5%;right:-1%;animation:floatSlow 7s ease-in-out .5s infinite}
+.fp5{top:50%;left:-3%;animation:floatSlow 11s ease-in-out 3s infinite}
+@keyframes floatSlow{0%,100%{transform:translateZ(var(--tz,80px)) rotateY(var(--ry,5deg)) translateY(0)}50%{transform:translateZ(var(--tz,80px)) rotateY(var(--ry,5deg)) translateY(-18px)}}
+
+/* Grid floor effect */
+.hero-grid-floor{position:absolute;bottom:-10%;left:-20%;right:-20%;height:60%;background:linear-gradient(180deg,transparent 0%,rgba(77,201,246,.01) 100%);transform:rotateX(65deg);transform-origin:bottom center;background-image:linear-gradient(rgba(77,201,246,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(77,201,246,.025) 1px,transparent 1px);background-size:60px 60px;mask-image:linear-gradient(to top,rgba(0,0,0,.4),transparent);-webkit-mask-image:linear-gradient(to top,rgba(0,0,0,.4),transparent);pointer-events:none}
+
+/* Floating connection lines (SVG) */
+.hero-lines{position:absolute;inset:0;pointer-events:none;opacity:.15}
+
+/* Avatar Photo Frame */
+.avatar-container{position:relative;width:420px;height:460px;display:flex;align-items:center;justify-content:center}
+.avatar-glow{position:absolute;top:50%;left:50%;width:350px;height:350px;transform:translate(-50%,-50%);border-radius:50%;background:conic-gradient(from 0deg,rgba(77,201,246,.12),rgba(139,108,193,.08),rgba(200,170,110,.06),rgba(77,201,246,.12));animation:avatarPulse 6s ease-in-out infinite;filter:blur(80px)}
+@keyframes avatarPulse{0%,100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:.6}50%{transform:translate(-50%,-50%) scale(1.15) rotate(180deg);opacity:1}}
+.avatar-ring{position:absolute;top:50%;left:50%;width:340px;height:340px;transform:translate(-50%,-50%);border-radius:50%;border:1.5px solid transparent;border-top-color:var(--cyan);border-right-color:rgba(0,229,255,.3);animation:ringRotate 8s linear infinite;filter:drop-shadow(0 0 6px rgba(0,229,255,.3))}
+.avatar-ring::before{content:'';position:absolute;top:-4px;left:50%;width:8px;height:8px;background:var(--cyan);border-radius:50%;box-shadow:0 0 15px var(--cyan),0 0 30px var(--cyan)}
+.avatar-ring-2{position:absolute;top:50%;left:50%;width:370px;height:370px;transform:translate(-50%,-50%);border-radius:50%;border:1px solid transparent;border-bottom-color:var(--purple);border-left-color:rgba(168,85,247,.2);animation:ringRotate 12s linear infinite reverse;filter:drop-shadow(0 0 4px rgba(168,85,247,.3))}
+.avatar-ring-2::before{content:'';position:absolute;bottom:-4px;left:50%;width:6px;height:6px;background:var(--purple);border-radius:50%;box-shadow:0 0 12px var(--purple)}
+.avatar-ring-3{position:absolute;top:50%;left:50%;width:395px;height:395px;transform:translate(-50%,-50%);border-radius:50%;border:1px dashed rgba(0,255,136,.06);animation:ringRotate 20s linear infinite}
+@keyframes ringRotate{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.avatar-photo-wrap{position:relative;width:280px;height:280px;border-radius:50%;z-index:2}
+@property --holo-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+.avatar-photo-border{position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from var(--holo-angle,0deg),var(--cyan),var(--purple),var(--green),var(--cyan));padding:3px;animation:holoBorder 4s linear infinite;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+@keyframes holoBorder{to{--holo-angle:360deg}}
+.avatar-photo{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center top;position:relative;z-index:1;filter:contrast(1.15) saturate(.85) brightness(.92);transition:all .6s}
+.avatar-container:hover .avatar-photo{filter:contrast(1.2) saturate(.95) brightness(.98);transform:scale(1.02)}
+.avatar-scanline{position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,229,255,.015) 2px,rgba(0,229,255,.015) 4px);z-index:3;pointer-events:none;animation:scanMove 3s linear infinite}
+@keyframes scanMove{to{background-position:0 100px}}
+.avatar-vignette{position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse at center,transparent 55%,rgba(4,6,11,.4) 100%);z-index:3;pointer-events:none}
+.avatar-nametag{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:.6rem;padding:.5rem 1.2rem;background:rgba(4,6,11,.85);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:100px;white-space:nowrap}
+.avatar-nametag-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.avatar-nametag-text{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text2)}
+.avatar-nametag-text strong{color:var(--text);font-weight:600}
+.avatar-hud{position:absolute;z-index:4;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--text3);opacity:.6;line-height:1.6}
+.avatar-hud-tl{top:30px;left:30px}
+.avatar-hud-tr{top:30px;right:30px;text-align:right}
+.avatar-hud-bl{bottom:55px;left:30px}
+.avatar-hud-br{bottom:55px;right:30px;text-align:right}
+.avatar-hud .val{color:var(--cyan)}.avatar-hud .grn{color:var(--green)}
+
+/* Floating orbit icons */
+.orbit-icon{position:absolute;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-family:'JetBrains Mono',monospace;font-weight:700;backdrop-filter:blur(10px);border:1px solid var(--glass-border);color:#fff;background:var(--glass)}
+.orbit-icon:nth-child(1){top:5%;left:15%;animation:floatOrbit 5s ease-in-out infinite}
+.orbit-icon:nth-child(2){top:10%;right:5%;animation:floatOrbit 6s ease-in-out 1s infinite}
+.orbit-icon:nth-child(3){bottom:25%;left:2%;animation:floatOrbit 5.5s ease-in-out 2s infinite}
+.orbit-icon:nth-child(4){bottom:8%;right:15%;animation:floatOrbit 7s ease-in-out .5s infinite}
+.orbit-icon:nth-child(5){top:40%;right:-5%;animation:floatOrbit 6s ease-in-out 1.5s infinite}
+.orbit-icon:nth-child(6){bottom:40%;left:10%;animation:floatOrbit 5s ease-in-out 3s infinite}
+@keyframes floatOrbit{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-12px) rotate(3deg)}75%{transform:translateY(8px) rotate(-2deg)}}
+
+/* Hero text */
+.hero-tag{display:inline-flex;align-items:center;gap:.6rem;padding:.5rem 1.2rem;border-radius:50px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan);margin-bottom:2rem;opacity:0;transform:translateY(30px)}
+.hero-tag .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 2s infinite}
+
+.hero h1{font-family:'Space Grotesk','Syne',sans-serif;font-size:clamp(3.5rem,8vw,7rem);font-weight:700;line-height:.95;letter-spacing:-.04em;opacity:0}
+.hero h1 .line{display:block;overflow:hidden}
+.hero h1 .line-inner{display:block;transform:translateY(110%)}
+.hero h1 .accent{background:linear-gradient(135deg,var(--cyan) 0%,var(--green) 50%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;animation:gradShift 4s ease-in-out infinite}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+.hero-subtitle{font-family:'JetBrains Mono',monospace;font-size:clamp(.85rem,1.5vw,1.1rem);color:var(--text2);margin:1.5rem 0 2rem;line-height:1.6;opacity:0;transform:translateY(20px);max-width:550px}
+.hero-subtitle .typed-text{color:var(--cyan);border-right:2px solid var(--cyan);padding-right:2px;animation:blink .8s step-end infinite}
+@keyframes blink{0%,100%{border-color:var(--cyan)}50%{border-color:transparent}}
+
+.hero-buttons{display:flex;gap:1rem;opacity:0;transform:translateY(20px)}
+
+.btn-glow{padding:.9rem 2rem;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none;position:relative;overflow:hidden;transition:all .3s}
+.btn-glow.primary{background:linear-gradient(135deg,var(--cyan),var(--cyan2));color:var(--bg);border:none}
+.btn-glow.primary::before{content:'';position:absolute;inset:-2px;background:linear-gradient(135deg,var(--cyan),var(--green),var(--purple));border-radius:10px;z-index:-1;opacity:0;transition:opacity .3s;filter:blur(15px)}
+.btn-glow.primary:hover::before{opacity:1}
+.btn-glow.primary:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(0,229,255,.3)}
+.btn-glow.ghost{background:transparent;color:var(--text);border:1px solid rgba(0,229,255,.2)}
+.btn-glow.ghost:hover{border-color:var(--cyan);background:rgba(0,229,255,.05);transform:translateY(-3px)}
+
+/* ─── HORIZONTAL SCROLL SECTION ─── */
+.hscroll-section{padding:5rem 0;position:relative}
+.hscroll-header{padding:0 6%;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:flex-end}
+.hscroll-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.5rem}
+.hscroll-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;letter-spacing:-.02em}
+.hscroll-count{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text3)}
+
+.hscroll-track{display:flex;gap:1.5rem;padding:0 6%;overflow-x:auto;scroll-snap-type:x mandatory;-ms-overflow-style:none;scrollbar-width:none;scroll-behavior:smooth}
+.hscroll-track::-webkit-scrollbar{display:none}
+
+/* ─── EXPERIENCE CARDS ─── */
+.exp-card{flex:0 0 420px;scroll-snap-align:start;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;position:relative;transition:all .5s cubic-bezier(.4,0,.2,1);cursor:pointer}
+.exp-card:hover{transform:scale(1.03) translateY(-8px);border-color:rgba(0,229,255,.2);box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px rgba(0,229,255,.1)}
+.exp-card-top{padding:1.5rem 1.75rem;position:relative;overflow:hidden}
+.exp-card-top::before{content:'';position:absolute;inset:0;opacity:.15;transition:opacity .5s}
+.exp-card:nth-child(1) .exp-card-top::before{background:linear-gradient(135deg,var(--cyan),var(--purple))}
+.exp-card:nth-child(2) .exp-card-top::before{background:linear-gradient(135deg,var(--orange),var(--red))}
+.exp-card:nth-child(3) .exp-card-top::before{background:linear-gradient(135deg,var(--purple),var(--cyan))}
+.exp-card:nth-child(4) .exp-card-top::before{background:linear-gradient(135deg,var(--green),var(--cyan))}
+.exp-card:nth-child(5) .exp-card-top::before{background:linear-gradient(135deg,var(--cyan2),var(--purple))}
+.exp-card:hover .exp-card-top::before{opacity:.25}
+.exp-card-company{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;position:relative}
+.exp-card-role{font-size:.85rem;color:var(--text2);margin-top:.25rem;position:relative}
+.exp-card-date{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);margin-top:.5rem;position:relative;display:flex;align-items:center;gap:.5rem}
+.exp-card-date .current-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.exp-card-body{padding:1.25rem 1.75rem 1.5rem}
+.exp-card-desc{font-size:.8rem;color:var(--text3);font-style:italic;margin-bottom:1rem;line-height:1.5}
+.exp-card-bullets{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.exp-card-bullets li{font-size:.82rem;color:var(--text2);line-height:1.5;padding-left:1rem;position:relative}
+.exp-card-bullets li::before{content:'';position:absolute;left:0;top:.55em;width:4px;height:4px;border-radius:50%;background:var(--cyan)}
+.exp-card-bullets li strong{color:var(--text);font-weight:600}
+.exp-card-footer{padding:.75rem 1.75rem;border-top:1px solid var(--glass-border);display:flex;gap:.5rem;flex-wrap:wrap}
+.exp-tag{padding:.2rem .6rem;background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.1);border-radius:4px;font-size:.65rem;font-family:'JetBrains Mono',monospace;color:var(--cyan)}
+
+/* ─── SKILLS ─── */
+.skills-section{padding:6rem 6%;position:relative;overflow:hidden;background:var(--bg)}
+.skills-section .bg-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Space Grotesk',sans-serif;font-size:clamp(8rem,20vw,18rem);font-weight:900;color:rgba(0,229,255,.02);white-space:nowrap;pointer-events:none}
+.skills-mosaic{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.skill-tile{background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:16px;padding:2rem;position:relative;overflow:hidden;transition:all .4s cubic-bezier(.4,0,.2,1)}
+.skill-tile:hover{border-color:rgba(0,229,255,.2);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.skill-tile::after{content:'';position:absolute;inset:0;background:var(--tile-grad);opacity:0;transition:opacity .4s}
+.skill-tile:hover::after{opacity:1}
+.skill-tile.big{grid-column:span 2}
+.skill-tile-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem;position:relative;z-index:1}
+.skill-tile-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:var(--icon-bg)}
+.skill-tile-name{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text2)}
+.skill-tile-tags{display:flex;flex-wrap:wrap;gap:.4rem;position:relative;z-index:1}
+.skill-tile-tag{padding:.3rem .65rem;border-radius:6px;font-size:.72rem;font-family:'JetBrains Mono',monospace;color:var(--text);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.skill-tile-tag:hover{background:rgba(0,229,255,.08);border-color:rgba(0,229,255,.2);color:var(--cyan);transform:scale(1.05)}
+
+/* ─── PROJECTS ─── */
+.projects-section{padding:6rem 0;background:var(--bg);position:relative}
+.projects-section::before{content:'';position:absolute;top:0;left:0;right:0;height:200px;background:linear-gradient(to bottom,var(--bg2),var(--bg));pointer-events:none}
+.project-featured{padding:0 6%;margin-bottom:3rem}
+.project-hero-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;min-height:400px;position:relative}
+.project-hero-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,229,255,.05),rgba(168,85,247,.03));pointer-events:none}
+.project-hero-left{padding:3rem;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1}
+.project-hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.3rem .8rem;border-radius:4px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15);font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--green);margin-bottom:1.5rem;width:fit-content}
+.project-hero-title{font-family:'Space Grotesk',sans-serif;font-size:2.2rem;font-weight:700;line-height:1.1;margin-bottom:1rem}
+.project-hero-desc{color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:1.5rem}
+.project-hero-stats{display:flex;gap:2rem}
+.project-stat{text-align:left}
+.project-stat-num{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--cyan)}
+.project-stat-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.1rem}
+.project-hero-right{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.project-hero-terminal{background:rgba(4,6,11,.8);border:1px solid var(--glass-border);border-radius:12px;width:90%;font-family:'JetBrains Mono',monospace;font-size:.72rem;overflow:hidden}
+.project-hero-terminal .term-bar{padding:.6rem 1rem;background:rgba(255,255,255,.03);border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:.5rem}
+.term-dot{width:8px;height:8px;border-radius:50%}
+.term-dot.r{background:#ff5f57}.term-dot.y{background:#ffbd2e}.term-dot.g{background:#28ca41}
+.term-bar-title{font-size:.6rem;color:var(--text3);margin-left:.5rem}
+.project-hero-terminal .term-body{padding:1rem 1.25rem;line-height:1.9}
+.t-p{color:var(--green)}.t-c{color:var(--text)}.t-o{color:var(--text2)}.t-k{color:var(--cyan)}.t-v{color:var(--orange)}.t-s{color:var(--green)}.t-cmt{color:var(--text3)}
+
+.project-row{display:flex;gap:1.5rem;padding:0 6%;overflow-x:auto;scrollbar-width:none}
+.project-row::-webkit-scrollbar{display:none}
+.project-card{flex:0 0 360px;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;transition:all .5s cubic-bezier(.4,0,.2,1);cursor:pointer;position:relative}
+.project-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-accent);opacity:0;transition:opacity .4s}
+.project-card:hover{transform:scale(1.03) translateY(-8px);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.project-card:hover::before{opacity:1}
+.project-card-body{padding:1.5rem}
+.project-card-icon{font-size:2rem;margin-bottom:.75rem}
+.project-card-title{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
+.project-card-desc{font-size:.8rem;color:var(--text2);line-height:1.6;margin-bottom:1rem}
+.project-card-impact{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.08);border-radius:6px;font-size:.75rem;color:var(--green);margin-bottom:1rem}
+.project-card-tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.project-card-tag{padding:.15rem .5rem;border-radius:3px;font-size:.6rem;font-family:'JetBrains Mono',monospace;color:var(--text3);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
+
+/* ─── ABOUT ─── */
+.about-section{padding:8rem 6%;background:var(--bg2)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.about-col h3{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.15em;margin-bottom:1.5rem}
+.edu-item{background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;transition:all .3s;position:relative;overflow:hidden}
+.edu-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--cyan),var(--purple));border-radius:0 2px 2px 0}
+.edu-item:hover{border-color:rgba(0,229,255,.2);transform:translateX(4px)}
+.edu-degree{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700}
+.edu-school{color:var(--cyan);font-size:.85rem;margin-top:.2rem}
+.competency-cloud{display:flex;flex-wrap:wrap;gap:.6rem}
+.comp-tag{padding:.5rem 1rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;font-size:.8rem;color:var(--text2);transition:all .3s;cursor:default;position:relative;overflow:hidden}
+.comp-tag::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--cyan-glow),transparent);opacity:0;transition:opacity .3s}
+.comp-tag:hover{color:var(--cyan);border-color:rgba(0,229,255,.2);transform:translateY(-2px)}
+.comp-tag:hover::before{opacity:1}
+
+/* ─── CONTACT ─── */
+.contact-section{padding:8rem 6%;text-align:center;background:var(--bg)}
+.contact-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,5vw,4rem);font-weight:700;margin-bottom:1rem}
+.contact-title .accent{background:linear-gradient(135deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.contact-sub{color:var(--text2);font-size:1rem;max-width:500px;margin:0 auto 3rem;line-height:1.7}
+.contact-cards{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.contact-card{display:flex;align-items:center;gap:.75rem;padding:1rem 1.5rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;text-decoration:none;color:var(--text2);font-size:.9rem;transition:all .4s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(20px)}
+.contact-card:hover{border-color:rgba(0,229,255,.3);color:var(--cyan);transform:translateY(-4px);box-shadow:0 15px 50px rgba(0,0,0,.3)}
+.contact-card-icon{font-size:1.3rem}
+
+/* ─── SECTION SHARED ─── */
+section{position:relative;z-index:1}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.15em;margin-bottom:.5rem}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700;letter-spacing:-.02em}
+
+footer{background:var(--bg);border-top:1px solid var(--glass-border);padding:1.5rem 6%;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3)}
+footer span{color:var(--cyan)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){
+  .hero{flex-direction:column;padding-top:7rem;text-align:center}
+  .hero-content{max-width:100%}
+  .hero-avatar-wrap{margin:3rem auto 0;transform:scale(.8)}
+  .hero-buttons{justify-content:center}
+  .hero-tag{margin:0 auto 2rem}
+  .project-hero-card{grid-template-columns:1fr}
+  .project-hero-right{min-height:300px}
+  .about-grid{grid-template-columns:1fr}
+  .skills-mosaic{grid-template-columns:1fr 1fr}
+  .skill-tile.big{grid-column:span 2}
+}
+@media(max-width:700px){
+  .cursor,.cursor-dot{display:none}body{cursor:auto}
+  nav{padding:1rem 5%}.nav-links{display:none}
+  .avatar-container{width:300px;height:340px}
+  .skills-mosaic{grid-template-columns:1fr}.skill-tile.big{grid-column:span 1}
+  .exp-card{flex:0 0 90vw}.project-card{flex:0 0 90vw}
+}
+</style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div class="preloader" id="preloader">
+  <div class="preloader-text" id="preloader-text"></div>
+  <div class="preloader-bar"><div class="preloader-fill" id="preloader-fill"></div></div>
+  <div class="preloader-percent" id="preloader-percent">0%</div>
+</div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- PARTICLES -->
+<canvas id="particles"></canvas>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo"><span class="bracket">{</span><span class="name">puru.ranjan</span><span class="ext">.devops</span><span class="bracket">}</span></div>
+  <ul class="nav-links">
+    <li><a href="#experience">Experience<span class="nav-line"></span></a></li>
+    <li><a href="#skills">Skills<span class="nav-line"></span></a></li>
+    <li><a href="#projects">Projects<span class="nav-line"></span></a></li>
+    <li><a href="#about">About<span class="nav-line"></span></a></li>
+    <li><a href="#contact">Contact<span class="nav-line"></span></a></li>
+  </ul>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero" id="home">
+  <div class="hero-bg-grad"></div>
+  <div class="hero-grid-floor"></div>
+
+  <!-- 3D FLOATING PANELS — infrastructure HUD -->
+  <div class="hero-3d-layer" id="parallaxLayer1">
+    <div class="float-panel fp1" style="--tz:80px;--ry:5deg">
+      <div class="fp-header"><span class="fp-dot"></span>CLUSTER HEALTH</div>
+      <div class="fp-val">uh-prod: 37 nodes</div>
+      <div class="fp-val">uh-staging: 8 nodes</div>
+      <div class="fp-val">uh-ml: 4 GPU nodes</div>
+      <div class="fp-bar"><div class="fp-bar-fill" style="background:var(--green)"></div></div>
+    </div>
+    <div class="float-panel fp2" style="--tz:120px;--ry:-3deg">
+      <div class="fp-header"><span class="fp-dot"></span>DEPLOYMENTS</div>
+      <div class="fp-val">ArgoCD synced: 70/70</div>
+      <div class="fp-val">Helm releases: 42</div>
+      <div class="fp-val">Last deploy: 3m ago</div>
+      <div class="fp-bar"><div class="fp-bar-fill" style="background:var(--cyan)"></div></div>
+    </div>
+  </div>
+  <div class="hero-3d-layer" id="parallaxLayer2">
+    <div class="float-panel fp3" style="--tz:60px;--ry:4deg">
+      <div class="fp-header"><span class="fp-dot"></span>OBSERVABILITY</div>
+      <div class="fp-val">Prometheus: 26 targets</div>
+      <div class="fp-val">Alerts firing: 0</div>
+      <div class="fp-val">p99 latency: 42ms</div>
+      <div class="fp-bar"><div class="fp-bar-fill" style="background:var(--green)"></div></div>
+    </div>
+    <div class="float-panel fp4" style="--tz:100px;--ry:-5deg">
+      <div class="fp-header"><span class="fp-dot"></span>CI/CD PIPELINE</div>
+      <div class="fp-val">Builds today: 23</div>
+      <div class="fp-val">Success rate: 98.7%</div>
+      <div class="fp-val">Avg time: 4m 12s</div>
+      <div class="fp-bar"><div class="fp-bar-fill" style="background:var(--purple)"></div></div>
+    </div>
+    <div class="float-panel fp5" style="--tz:40px;--ry:2deg">
+      <div class="fp-header"><span class="fp-dot"></span>SECURITY</div>
+      <div class="fp-val">IRSA policies: 18</div>
+      <div class="fp-val">Cred rotation: OK</div>
+      <div class="fp-bar"><div class="fp-bar-fill" style="background:var(--orange)"></div></div>
+    </div>
+  </div>
+
+  <!-- SVG connection lines between panels -->
+  <svg class="hero-lines" viewBox="0 0 1400 800" preserveAspectRatio="none">
+    <line x1="120" y1="200" x2="400" y2="350" stroke="rgba(0,229,255,.15)" stroke-width=".5" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="2s" repeatCount="indefinite"/></line>
+    <line x1="1100" y1="150" x2="800" y2="400" stroke="rgba(168,85,247,.12)" stroke-width=".5" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="2.5s" repeatCount="indefinite"/></line>
+    <line x1="200" y1="600" x2="500" y2="400" stroke="rgba(0,255,136,.1)" stroke-width=".5" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="3s" repeatCount="indefinite"/></line>
+    <line x1="1200" y1="650" x2="900" y2="450" stroke="rgba(0,229,255,.12)" stroke-width=".5" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="2s" repeatCount="indefinite"/></line>
+  </svg>
+
+  <div class="hero-content">
+    <div class="hero-tag" id="heroTag"><span class="pulse-dot"></span>Available for Senior DevOps / Platform Eng roles</div>
+    <h1 id="heroTitle">
+      <span class="line"><span class="line-inner">I Build</span></span>
+      <span class="line"><span class="line-inner"><span class="accent">Infrastructure</span></span></span>
+      <span class="line"><span class="line-inner">That Never Sleeps.</span></span>
+    </h1>
+    <div class="hero-subtitle" id="heroSub"><span class="typed-text" id="typed"></span></div>
+    <div class="hero-buttons" id="heroBtns">
+      <a href="#experience" class="btn-glow primary">Explore My Journey</a>
+      <a href="#contact" class="btn-glow ghost">Let's Talk</a>
+    </div>
+  </div>
+
+  <!-- AVATAR with real photo -->
+  <div class="hero-avatar-wrap">
+    <div class="avatar-container" id="avatarContainer">
+      <div class="avatar-glow"></div>
+      <div class="avatar-ring"></div>
+      <div class="avatar-ring-2"></div>
+      <div class="avatar-ring-3"></div>
+      <div class="orbit-icon">K8s</div>
+      <div class="orbit-icon">AWS</div>
+      <div class="orbit-icon">TF</div>
+      <div class="orbit-icon">CI</div>
+      <div class="orbit-icon">SRE</div>
+      <div class="orbit-icon">IAM</div>
+      <div class="avatar-hud avatar-hud-tl">SYS <span class="grn">ONLINE</span><br/>UPTIME <span class="val">99.97%</span></div>
+      <div class="avatar-hud avatar-hud-tr">REGION <span class="val">ap-south-1</span><br/>NODES <span class="val">37+</span></div>
+      <div class="avatar-hud avatar-hud-bl">PODS <span class="val">70+</span><br/>GPU <span class="grn">ACTIVE</span></div>
+      <div class="avatar-hud avatar-hud-br">DEPLOY <span class="grn">0-DT</span><br/>VER <span class="val">v7.0-LTS</span></div>
+      <div class="avatar-photo-wrap">
+        <div class="avatar-photo-border"></div>
+        <img src="photo.png" alt="Puru Ranjan" class="avatar-photo"/>
+        <div class="avatar-scanline"></div>
+        <div class="avatar-vignette"></div>
+      </div>
+      <div class="avatar-nametag"><span class="avatar-nametag-dot"></span><span class="avatar-nametag-text"><strong>Puru Ranjan</strong> &middot; DevOps Engineer</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ EXPERIENCE ══════════ -->
+<section class="hscroll-section" id="experience">
+  <div class="hscroll-header">
+    <div><div class="section-label">// Career Journey</div><div class="section-title">Where I've Built Things</div></div>
+    <div class="hscroll-count">5 roles &middot; 7+ years</div>
+  </div>
+  <div class="hscroll-track" id="expTrack">
+    <div class="exp-card"><div class="exp-card-top"><div class="exp-card-company">Ultrahuman</div><div class="exp-card-role">DevOps Engineer</div><div class="exp-card-date"><span class="current-dot"></span>Jan 2026 — Present</div></div><div class="exp-card-body"><div class="exp-card-desc">Health-tech startup &middot; K8s platform, CI/CD, observability, ML infra</div><ul class="exp-card-bullets"><li><strong>Zero-downtime K8s upgrades</strong> across 3 EKS clusters (37+ nodes, 70+ deployments, GPU)</li><li><strong>Greenfield ML platform</strong> — CI/CD, autoscaling 3&rarr;10, dual staging, zero to prod</li><li><strong>New AWS region</strong> for international expansion — DBs, cache, monitoring stack</li><li><strong>Observability redesign</strong> — Vector + OpenSearch, 26 per-app structured indexes</li><li><strong>DB security hardening</strong> — least-privilege, DDL protection, credential rotation</li><li><strong>Karpenter NodePools</strong> — eliminated Spot failures, cleaned 4,600+ stale resources</li></ul></div><div class="exp-card-footer"><span class="exp-tag">EKS</span><span class="exp-tag">Karpenter</span><span class="exp-tag">ArgoCD</span><span class="exp-tag">Terraform</span><span class="exp-tag">Vector</span><span class="exp-tag">KEDA</span></div></div>
+    <div class="exp-card"><div class="exp-card-top"><div class="exp-card-company">Oracle</div><div class="exp-card-role">Senior Member Technical Staff</div><div class="exp-card-date">Apr 2024 — Oct 2025</div></div><div class="exp-card-body"><div class="exp-card-desc">OCI &middot; Fleet Patching, Telemetry, IAM, On-Call</div><ul class="exp-card-bullets"><li><strong>Multi-region fleet patching</strong> — Python, OCI SDK, Terraform automated pipeline</li><li><strong>Telemetry-based monitoring</strong> — OCI Alarms, proactive incident detection</li><li><strong>150+ on-call escalations</strong> resolved with SLA adherence</li><li><strong>IAM automation</strong> — OCI Vault + Ansible, 35% compliance improvement</li></ul></div><div class="exp-card-footer"><span class="exp-tag">OCI</span><span class="exp-tag">Python</span><span class="exp-tag">Terraform</span><span class="exp-tag">Splunk</span><span class="exp-tag">Grafana</span></div></div>
+    <div class="exp-card"><div class="exp-card-top"><div class="exp-card-company">Visa Inc.</div><div class="exp-card-role">Senior Software Engineer</div><div class="exp-card-date">Dec 2022 — Apr 2024</div></div><div class="exp-card-body"><div class="exp-card-desc">GitOps Transformation &middot; AWS Automation &middot; CI/CD</div><ul class="exp-card-bullets"><li><strong>Led GitOps transformation</strong> — org-wide adoption, deployment consistency</li><li><strong>Ansible automation</strong> + security scanning + Helm K8s deployments</li><li><strong>Team enablement</strong> — training sessions, IaC capabilities</li></ul></div><div class="exp-card-footer"><span class="exp-tag">GitOps</span><span class="exp-tag">Helm</span><span class="exp-tag">Ansible</span><span class="exp-tag">Jenkins</span><span class="exp-tag">AWS</span></div></div>
+    <div class="exp-card"><div class="exp-card-top"><div class="exp-card-company">Anthology Inc.</div><div class="exp-card-role">Cloud &amp; DevOps Engineer</div><div class="exp-card-date">May 2021 — Dec 2022</div></div><div class="exp-card-body"><div class="exp-card-desc">AWS &middot; Container Migration &middot; Terraform</div><ul class="exp-card-bullets"><li><strong>Legacy &rarr; container migration</strong> — Docker, K8s, Terraform IaC</li><li><strong>Centralized logging</strong> — CloudWatch + Splunk, reduced MTTR</li><li><strong>ECS microservices</strong> + Jenkins CI/CD pipelines</li></ul></div><div class="exp-card-footer"><span class="exp-tag">Docker</span><span class="exp-tag">ECS</span><span class="exp-tag">Terraform</span><span class="exp-tag">CloudWatch</span></div></div>
+    <div class="exp-card"><div class="exp-card-top"><div class="exp-card-company">NTT Data</div><div class="exp-card-role">Associate Software Engineer</div><div class="exp-card-date">Oct 2018 — May 2021</div></div><div class="exp-card-body"><div class="exp-card-desc">Production Support &middot; UNIX/Linux &middot; AWS EC2</div><ul class="exp-card-bullets"><li><strong>24/7 UNIX/Linux</strong> server management, performance tuning</li><li><strong>Bash/Shell automation</strong> — log analysis, health checks</li><li><strong>Knowledge base</strong> — improved ticket resolution efficiency</li></ul></div><div class="exp-card-footer"><span class="exp-tag">Linux</span><span class="exp-tag">Bash</span><span class="exp-tag">AWS EC2</span><span class="exp-tag">Nagios</span></div></div>
+  </div>
+</section>
+
+<!-- ══════════ SKILLS ══════════ -->
+<section class="skills-section" id="skills">
+  <div class="bg-text">DEVOPS</div>
+  <div class="section-label">// Technical Arsenal</div>
+  <div class="section-title" style="margin-bottom:2.5rem">Technologies I Ship With</div>
+  <div class="skills-mosaic" id="skGrid">
+    <div class="skill-tile big" style="--tile-grad:linear-gradient(135deg,rgba(0,229,255,.04),transparent);--icon-bg:rgba(0,229,255,.1)"><div class="skill-tile-header"><div class="skill-tile-icon">&#9729;</div><div class="skill-tile-name">Cloud Platforms</div></div><div class="skill-tile-tags"><span class="skill-tile-tag">AWS EKS</span><span class="skill-tile-tag">EC2</span><span class="skill-tile-tag">S3</span><span class="skill-tile-tag">RDS</span><span class="skill-tile-tag">IAM</span><span class="skill-tile-tag">VPC</span><span class="skill-tile-tag">ECR</span><span class="skill-tile-tag">ElastiCache</span><span class="skill-tile-tag">Bedrock</span><span class="skill-tile-tag">Secrets Mgr</span><span class="skill-tile-tag">OCI</span><span class="skill-tile-tag">Azure DevOps</span></div></div>
+    <div class="skill-tile" style="--tile-grad:linear-gradient(135deg,rgba(168,85,247,.04),transparent);--icon-bg:rgba(168,85,247,.1)"><div class="skill-tile-header"><div class="skill-tile-icon">&#9881;</div><div class="skill-tile-name">Orchestration</div></div><div class="skill-tile-tags"><span class="skill-tile-tag">Kubernetes</span><span class="skill-tile-tag">Docker</span><span class="skill-tile-tag">Karpenter</span><span class="skill-tile-tag">KEDA</span><span class="skill-tile-tag">Helm</span><span class="skill-tile-tag">Argo CD</span><span class="skill-tile-tag">Cluster Autoscaler</span></div></div>
+    <div class="skill-tile" style="--tile-grad:linear-gradient(135deg,rgba(0,255,136,.04),transparent);--icon-bg:rgba(0,255,136,.1)"><div class="skill-tile-header"><div class="skill-tile-icon">&#128736;</div><div class="skill-tile-name">IaC &amp; Automation</div></div><div class="skill-tile-tags"><span class="skill-tile-tag">Terraform</span><span class="skill-tile-tag">Ansible</span><span class="skill-tile-tag">Helm Charts</span><span class="skill-tile-tag">CloudFormation</span><span class="skill-tile-tag">Jenkins</span><span class="skill-tile-tag">GitHub Actions</span></div></div>
+    <div class="skill-tile big" style="--tile-grad:linear-gradient(135deg,rgba(255,159,67,.04),transparent);--icon-bg:rgba(255,159,67,.1)"><div class="skill-tile-header"><div class="skill-tile-icon">&#128200;</div><div class="skill-tile-name">Observability &amp; SRE</div></div><div class="skill-tile-tags"><span class="skill-tile-tag">Prometheus</span><span class="skill-tile-tag">Grafana</span><span class="skill-tile-tag">VictoriaMetrics</span><span class="skill-tile-tag">Vector</span><span class="skill-tile-tag">OpenSearch</span><span class="skill-tile-tag">Splunk</span><span class="skill-tile-tag">New Relic</span><span class="skill-tile-tag">Sentry</span><span class="skill-tile-tag">AppDynamics</span><span class="skill-tile-tag">Nagios</span></div></div>
+    <div class="skill-tile" style="--tile-grad:linear-gradient(135deg,rgba(255,71,87,.04),transparent);--icon-bg:rgba(255,71,87,.1)"><div class="skill-tile-header"><div class="skill-tile-icon">&#128274;</div><div class="skill-tile-name">Security &amp; IAM</div></div><div class="skill-tile-tags"><span class="skill-tile-tag">AWS IAM</span><span class="skill-tile-tag">IRSA</span><span class="skill-tile-tag">RBAC</span><span class="skill-tile-tag">OCI Vault</span><span class="skill-tile-tag">Wazuh SIEM</span><span class="skill-tile-tag">Azure AD</span><span class="skill-tile-tag">Cred Rotation</span></div></div>
+    <div class="skill-tile" style="--tile-grad:linear-gradient(135deg,rgba(255,209,102,.04),transparent);--icon-bg:rgba(255,209,102,.1)"><div class="skill-tile-header"><div class="skill-tile-icon">&#128451;</div><div class="skill-tile-name">Databases &amp; Lang</div></div><div class="skill-tile-tags"><span class="skill-tile-tag">PostgreSQL</span><span class="skill-tile-tag">MySQL</span><span class="skill-tile-tag">Redis</span><span class="skill-tile-tag">MongoDB</span><span class="skill-tile-tag">TimescaleDB</span><span class="skill-tile-tag">Snowflake</span><span class="skill-tile-tag">Python</span><span class="skill-tile-tag">Bash</span><span class="skill-tile-tag">Groovy</span></div></div>
+  </div>
+</section>
+
+<!-- ══════════ PROJECTS ══════════ -->
+<section class="projects-section" id="projects">
+  <div style="padding:0 6%"><div class="section-label">// Signature Work</div><div class="section-title" style="margin-bottom:2.5rem">Projects That Moved the Needle</div></div>
+  <div class="project-featured">
+    <div class="project-hero-card">
+      <div class="project-hero-left"><div class="project-hero-badge">&#9733; Featured Project</div><div class="project-hero-title">Zero-Downtime K8s Fleet Upgrade</div><div class="project-hero-desc">Orchestrated rolling upgrades across 3 production EKS clusters with GPU workloads. Pre-validated staging, risk runbooks, 3 critical risks mitigated. Now the org standard.</div><div class="project-hero-stats"><div class="project-stat"><div class="project-stat-num">3</div><div class="project-stat-label">EKS Clusters</div></div><div class="project-stat"><div class="project-stat-num">70+</div><div class="project-stat-label">Deployments</div></div><div class="project-stat"><div class="project-stat-num">37+</div><div class="project-stat-label">Nodes</div></div><div class="project-stat"><div class="project-stat-num">0</div><div class="project-stat-label">Downtime</div></div></div></div>
+      <div class="project-hero-right"><div class="project-hero-terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-bar-title">k8s-upgrade.sh</span></div><div class="term-body"><div><span class="t-p">$ </span><span class="t-c">./upgrade.sh --cluster uh-prod</span></div><div class="t-cmt"># Pre-flight checks...</div><div><span class="t-s">&#10003;</span> <span class="t-o">Staging validated</span></div><div><span class="t-s">&#10003;</span> <span class="t-o">Karpenter NodePools migrated</span></div><div><span class="t-s">&#10003;</span> <span class="t-o">GPU workloads drained</span></div><div><span class="t-s">&#10003;</span> <span class="t-o">Rolling update: 37/37 nodes</span></div><div><span class="t-s">&#10003;</span> <span class="t-o">ArgoCD sync verified</span></div><div style="margin-top:.5rem"><span class="t-k">Complete.</span> <span class="t-v">Downtime: 0s</span></div></div></div></div>
+    </div>
+  </div>
+  <div class="project-row" id="projRow">
+    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--purple),var(--cyan))"><div class="project-card-body"><div class="project-card-icon">&#129302;</div><div class="project-card-title">Greenfield ML Platform</div><div class="project-card-desc">End-to-end infra for AI team — CI/CD, autoscaling 3&rarr;10, dual staging. Zero to production.</div><div class="project-card-impact">&#10003; 0 &rarr; Prod in record time</div><div class="project-card-tags"><span class="project-card-tag">AWS</span><span class="project-card-tag">Terraform</span><span class="project-card-tag">KEDA</span><span class="project-card-tag">IRSA</span></div></div></div>
+    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--green),var(--cyan))"><div class="project-card-body"><div class="project-card-icon">&#127758;</div><div class="project-card-title">International Cloud Expansion</div><div class="project-card-desc">New AWS region — RDS, Redis, OpenSearch, Prometheus/VictoriaMetrics monitoring from scratch.</div><div class="project-card-impact">&#10003; Backend teams unblocked day one</div><div class="project-card-tags"><span class="project-card-tag">Multi-Region</span><span class="project-card-tag">RDS</span><span class="project-card-tag">Prometheus</span><span class="project-card-tag">VM</span></div></div></div>
+    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--orange),var(--red))"><div class="project-card-body"><div class="project-card-icon">&#128301;</div><div class="project-card-title">Observability Pipeline Redesign</div><div class="project-card-desc">Vector + OpenSearch — 26 per-app structured indexes, field-level querying across all teams.</div><div class="project-card-impact">&#10003; 26 structured indexes deployed</div><div class="project-card-tags"><span class="project-card-tag">Vector</span><span class="project-card-tag">OpenSearch</span><span class="project-card-tag">Grafana</span></div></div></div>
+    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--cyan),var(--green))"><div class="project-card-body"><div class="project-card-icon">&#128260;</div><div class="project-card-title">OCI Fleet Patching</div><div class="project-card-desc">Multi-region automated patching — Python, Terraform, telemetry, 150+ escalations resolved.</div><div class="project-card-impact">&#10003; Manual &rarr; Repeatable pipeline</div><div class="project-card-tags"><span class="project-card-tag">OCI</span><span class="project-card-tag">Python</span><span class="project-card-tag">Terraform</span><span class="project-card-tag">Ansible</span></div></div></div>
+    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--purple),var(--orange))"><div class="project-card-body"><div class="project-card-icon">&#128256;</div><div class="project-card-title">GitOps at Visa</div><div class="project-card-desc">Org-wide GitOps — Helm, K8s, security scanning, team enablement and training.</div><div class="project-card-impact">&#10003; Org-wide adoption achieved</div><div class="project-card-tags"><span class="project-card-tag">GitOps</span><span class="project-card-tag">ArgoCD</span><span class="project-card-tag">Helm</span><span class="project-card-tag">Jenkins</span></div></div></div>
+  </div>
+</section>
+
+<!-- ══════════ ABOUT ══════════ -->
+<section class="about-section" id="about">
+  <div class="section-label">// Background</div><div class="section-title" style="margin-bottom:3rem">Education &amp; Core DNA</div>
+  <div class="about-grid">
+    <div class="about-col"><h3>Education</h3><div class="edu-item"><div class="edu-degree">MTech in Data Science &amp; Engineering</div><div class="edu-school">BITS Pilani</div></div><div class="edu-item"><div class="edu-degree">Bachelor of Engineering</div><div class="edu-school">SJB Institute of Technology</div></div></div>
+    <div class="about-col"><h3>Core Competencies</h3><div class="competency-cloud"><span class="comp-tag">Kubernetes at Scale</span><span class="comp-tag">Infrastructure as Code</span><span class="comp-tag">CI/CD Architecture</span><span class="comp-tag">Observability &amp; SRE</span><span class="comp-tag">Cloud Security &amp; IAM</span><span class="comp-tag">Multi-Region Infra</span><span class="comp-tag">Database Security</span><span class="comp-tag">ML Platform Enablement</span><span class="comp-tag">Developer Productivity</span><span class="comp-tag">Incident Response</span><span class="comp-tag">Performance Optimization</span><span class="comp-tag">Cross-functional Leadership</span><span class="comp-tag">Automation-First</span><span class="comp-tag">GitOps</span><span class="comp-tag">Platform Engineering</span><span class="comp-tag">Zero-Downtime Ops</span></div></div>
+  </div>
+</section>
+
+<!-- ══════════ CONTACT ══════════ -->
+<section class="contact-section" id="contact">
+  <div class="section-label" style="display:inline-block">// Let's Connect</div>
+  <div class="contact-title" style="margin-top:.75rem">Build Something <span class="accent">Unbreakable</span></div>
+  <div class="contact-sub">Whether you need a Senior DevOps Engineer, Platform Engineering lead, or someone to make your infra bulletproof — let's talk.</div>
+  <div class="contact-cards">
+    <a href="mailto:ranjanpuru@gmail.com" class="contact-card"><span class="contact-card-icon">&#9993;</span>ranjanpuru@gmail.com</a>
+    <a href="https://linkedin.com/in/puru-ranjan" target="_blank" rel="noopener" class="contact-card"><span class="contact-card-icon">&#128188;</span>LinkedIn</a>
+    <a href="tel:+919035425939" class="contact-card"><span class="contact-card-icon">&#128241;</span>+91-9035425939</a>
+  </div>
+</section>
+
+<footer><div><span>{puru.ranjan}</span> — Deployed with zero downtime.</div><div>&copy; 2026 Puru Ranjan</div></footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ── PRELOADER ── */
+const steps=['Initializing kubernetes cluster...','Pulling container images...','Deploying pods to production...','Running health checks...','Syncing ArgoCD applications...','Portfolio ready. Shipping to prod.'];
+(function(){const f=document.getElementById('preloader-fill'),t=document.getElementById('preloader-text'),p=document.getElementById('preloader-percent');let s=0,pr=0;function tick(){if(pr>=100){document.getElementById('preloader').classList.add('done');heroReveal();return}pr+=Math.random()*18+4;if(pr>100)pr=100;f.style.width=pr+'%';p.textContent=Math.floor(pr)+'%';const i=Math.min(Math.floor(pr/20),steps.length-1);if(i!==s)s=i;t.textContent='> '+steps[s];setTimeout(tick,200+Math.random()*300)}tick()})();
+
+/* ── CURSOR ── */
+const cursor=document.getElementById('cursor'),cursorDot=document.getElementById('cursorDot');let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function ac(){cx+=(mx-cx)*.15;cy+=(my-cy)*.15;cursor.style.left=cx+'px';cursor.style.top=cy+'px';cursorDot.style.left=mx+'px';cursorDot.style.top=my+'px';requestAnimationFrame(ac)})();
+document.querySelectorAll('a,.btn-glow,.exp-card,.project-card,.skill-tile,.comp-tag,.contact-card').forEach(el=>{el.addEventListener('mouseenter',()=>cursor.classList.add('hovering'));el.addEventListener('mouseleave',()=>cursor.classList.remove('hovering'))});
+
+/* ── PARTICLES ── */
+const cvs=document.getElementById('particles'),ctx=cvs.getContext('2d');let W,H,pts=[];
+function rc(){W=cvs.width=innerWidth;H=cvs.height=innerHeight}rc();addEventListener('resize',rc);
+for(let i=0;i<80;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,o:Math.random()*.3+.1});
+(function dp(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(77,201,246,${p.o*.6})`;ctx.fill()});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<150){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(77,201,246,${.025*(1-d/150)})`;ctx.lineWidth=.5;ctx.stroke()}}requestAnimationFrame(dp)})();
+
+/* ── HERO REVEAL (GSAP) ── */
+function heroReveal(){
+  const tl=gsap.timeline({defaults:{ease:'expo.out'}});
+  // 3D floating panels fly in from edges
+  tl.from('.float-panel',{opacity:0,scale:.6,y:60,rotateX:15,duration:1,stagger:.12,ease:'back.out(1.2)'},.1);
+  tl.from('.hero-grid-floor',{opacity:0,duration:1.5},.2);
+  tl.from('.hero-lines',{opacity:0,duration:1.2},.5);
+  tl.to('.hero-tag',{opacity:1,y:0,duration:.8},.4);
+  tl.to('.hero h1 .line-inner',{y:'0%',duration:1.2,stagger:.08},.5);
+  tl.to('#heroTitle',{opacity:1,duration:.1},.45);
+  tl.to('.hero-subtitle',{opacity:1,y:0,duration:.8},1.1);
+  tl.to('.hero-buttons',{opacity:1,y:0,duration:.8},1.3);
+  tl.from('.avatar-container',{scale:.85,opacity:0,duration:1.4,ease:'back.out(1.4)'},.6);
+  tl.from('.avatar-hud',{opacity:0,duration:.6,stagger:.1},1.4);
+  tl.from('.orbit-icon',{opacity:0,scale:.5,duration:.5,stagger:.06},1.5);
+  tl.from('.avatar-nametag',{opacity:0,y:10,duration:.5},1.8);
+  typeWriter('Puru Ranjan — 7+ years shipping infrastructure that scales, self-heals, and never pages you at 3AM.',document.getElementById('typed'),1400);
+}
+function typeWriter(text,el,delay){let i=0;setTimeout(()=>{const iv=setInterval(()=>{el.textContent=text.substring(0,++i);if(i>=text.length)clearInterval(iv)},30)},delay)}
+
+/* ── NAV ── */
+addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>50));
+
+/* ── GSAP SCROLL ANIMATIONS ── */
+gsap.utils.toArray('.exp-card').forEach((c,i)=>{gsap.from(c,{scrollTrigger:{trigger:'.hscroll-track',start:'top 80%'},x:80,opacity:0,duration:.8,delay:i*.12,ease:'power3.out'})});
+gsap.utils.toArray('.skill-tile').forEach((t,i)=>{gsap.from(t,{scrollTrigger:{trigger:t,start:'top 85%'},y:50,opacity:0,duration:.7,delay:i*.08,ease:'power3.out'})});
+gsap.from('.project-hero-card',{scrollTrigger:{trigger:'.project-hero-card',start:'top 80%'},y:60,opacity:0,duration:1,ease:'power3.out'});
+gsap.utils.toArray('.project-card').forEach((c,i)=>{gsap.from(c,{scrollTrigger:{trigger:'.project-row',start:'top 80%'},x:60,opacity:0,duration:.8,delay:i*.1,ease:'power3.out'})});
+gsap.utils.toArray('.edu-item').forEach((e,i)=>{gsap.from(e,{scrollTrigger:{trigger:e,start:'top 85%'},x:-30,opacity:0,duration:.6,delay:i*.1,ease:'power3.out'})});
+gsap.utils.toArray('.comp-tag').forEach((c,i)=>{gsap.from(c,{scrollTrigger:{trigger:'.competency-cloud',start:'top 85%'},y:20,opacity:0,duration:.4,delay:i*.03,ease:'power2.out'})});
+gsap.from('.contact-title',{scrollTrigger:{trigger:'.contact-section',start:'top 75%'},y:40,opacity:0,duration:.8});
+gsap.utils.toArray('.contact-card').forEach((c,i)=>{gsap.from(c,{scrollTrigger:{trigger:'.contact-cards',start:'top 85%'},y:20,opacity:0,duration:.5,delay:i*.1})});
+gsap.utils.toArray('.section-label').forEach(el=>{gsap.from(el,{scrollTrigger:{trigger:el,start:'top 85%'},x:-30,opacity:0,duration:.6})});
+gsap.utils.toArray('.section-title').forEach(el=>{gsap.from(el,{scrollTrigger:{trigger:el,start:'top 85%'},y:30,opacity:0,duration:.7,delay:.1})});
+
+/* ── DRAG SCROLL ── */
+[document.getElementById('expTrack'),document.getElementById('projRow')].forEach(t=>{if(!t)return;let d=false,sx,sl;t.addEventListener('mousedown',e=>{d=true;sx=e.pageX-t.offsetLeft;sl=t.scrollLeft;t.style.cursor='grabbing'});t.addEventListener('mouseleave',()=>{d=false;t.style.cursor='grab'});t.addEventListener('mouseup',()=>{d=false;t.style.cursor='grab'});t.addEventListener('mousemove',e=>{if(!d)return;e.preventDefault();t.scrollLeft=sl-(e.pageX-t.offsetLeft-sx)*1.5});t.style.cursor='grab'});
+
+/* ── PHOTO 3D TILT ── */
+const ac=document.getElementById('avatarContainer');
+const heroEl=document.querySelector('.hero');
+heroEl.addEventListener('mousemove',e=>{
+  const r=heroEl.getBoundingClientRect();
+  const x=(e.clientX-r.left)/r.width-.5;
+  const y=(e.clientY-r.top)/r.height-.5;
+  // Photo tilt
+  gsap.to(ac,{rotateY:x*8,rotateX:-y*8,duration:.6,ease:'power2.out',transformPerspective:800});
+  // 3D parallax on floating panels — each layer moves differently
+  gsap.to('#parallaxLayer1',{x:x*40,y:y*25,duration:.8,ease:'power2.out'});
+  gsap.to('#parallaxLayer2',{x:x*-25,y:y*-15,duration:1,ease:'power2.out'});
+  // Grid floor reacts
+  gsap.to('.hero-grid-floor',{rotateX:65+y*5,duration:1,ease:'power2.out'});
+});
+heroEl.addEventListener('mouseleave',()=>{
+  gsap.to(ac,{rotateY:0,rotateX:0,duration:.8,ease:'elastic.out(1,.5)'});
+  gsap.to('#parallaxLayer1',{x:0,y:0,duration:1,ease:'power2.out'});
+  gsap.to('#parallaxLayer2',{x:0,y:0,duration:1,ease:'power2.out'});
+  gsap.to('.hero-grid-floor',{rotateX:65,duration:1,ease:'power2.out'});
+});
+
+/* ── SCROLL PARALLAX — panels drift as you scroll past hero ── */
+gsap.to('#parallaxLayer1',{y:-80,opacity:0,scrollTrigger:{trigger:'.hero',start:'60% top',end:'bottom top',scrub:.6}});
+gsap.to('#parallaxLayer2',{y:-50,opacity:0,scrollTrigger:{trigger:'.hero',start:'60% top',end:'bottom top',scrub:.6}});
+gsap.to('.hero-grid-floor',{opacity:0,scrollTrigger:{trigger:'.hero',start:'70% top',end:'bottom top',scrub:.5}});
+gsap.to('.hero-lines',{opacity:0,scrollTrigger:{trigger:'.hero',start:'60% top',end:'bottom top',scrub:.5}});
+</script>
+</body>
+</html>
