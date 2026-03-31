@@ -149,39 +149,25 @@ nav.scrolled{background:rgba(12,12,14,.92);backdrop-filter:blur(30px) saturate(1
 /* ─── PROJECTS ─── */
 .projects-section{padding:6rem 0;background:var(--bg);position:relative}
 .projects-section::before{content:'';position:absolute;top:0;left:0;right:0;height:200px;background:linear-gradient(to bottom,var(--bg2),var(--bg));pointer-events:none}
-.project-featured{padding:0 6%;margin-bottom:3rem}
-.project-hero-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;min-height:400px;position:relative}
-.project-hero-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(168,85,247,.03));pointer-events:none}
-.project-hero-left{padding:3rem;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1}
-.project-hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.3rem .8rem;border-radius:4px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.15);font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--green);margin-bottom:1.5rem;width:fit-content}
-.project-hero-title{font-family:'Space Grotesk',sans-serif;font-size:2.2rem;font-weight:700;line-height:1.1;margin-bottom:1rem}
-.project-hero-desc{color:var(--text2);font-size:.95rem;line-height:1.7;margin-bottom:1.5rem}
-.project-hero-stats{display:flex;gap:2rem}
-.project-stat{text-align:left}
-.project-stat-num{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--text)}
-.project-stat-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.1rem}
-.project-hero-right{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.project-hero-terminal{background:rgba(4,6,11,.8);border:1px solid var(--glass-border);border-radius:12px;width:90%;font-family:'JetBrains Mono',monospace;font-size:.72rem;overflow:hidden}
-.project-hero-terminal .term-bar{padding:.6rem 1rem;background:rgba(255,255,255,.03);border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:.5rem}
-.term-dot{width:8px;height:8px;border-radius:50%}
-.term-dot.r{background:#ff5f57}.term-dot.y{background:#ffbd2e}.term-dot.g{background:#28ca41}
-.term-bar-title{font-size:.6rem;color:var(--text3);margin-left:.5rem}
-.project-hero-terminal .term-body{padding:1rem 1.25rem;line-height:1.9}
-.t-p{color:var(--green)}.t-c{color:var(--text)}.t-o{color:var(--text2)}.t-k{color:var(--text)}.t-v{color:var(--orange)}.t-s{color:var(--green)}.t-cmt{color:var(--text3)}
 
-.project-row{display:flex;gap:1.5rem;padding:0 6%;overflow-x:auto;scrollbar-width:none}
+.project-row{display:flex;gap:1.5rem;padding:0 6%;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;cursor:grab}
 .project-row::-webkit-scrollbar{display:none}
-.project-card{flex:0 0 360px;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;transition:all .5s cubic-bezier(.4,0,.2,1);cursor:pointer;position:relative}
+.project-row:active{cursor:grabbing}
+.project-card{flex:0 0 420px;scroll-snap-align:start;background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;overflow:hidden;transition:all .5s cubic-bezier(.4,0,.2,1);position:relative}
 .project-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--card-accent);opacity:0;transition:opacity .4s}
-.project-card:hover{transform:scale(1.03) translateY(-8px);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.project-card:hover{transform:translateY(-8px);border-color:rgba(255,255,255,.1);box-shadow:0 30px 80px rgba(0,0,0,.5)}
 .project-card:hover::before{opacity:1}
-.project-card-body{padding:1.5rem}
-.project-card-icon{font-size:2rem;margin-bottom:.75rem}
-.project-card-title{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
-.project-card-desc{font-size:.8rem;color:var(--text2);line-height:1.6;margin-bottom:1rem}
-.project-card-impact{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.08);border-radius:6px;font-size:.75rem;color:var(--green);margin-bottom:1rem}
+.project-card-body{padding:1.75rem}
+.project-card-num{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:rgba(255,255,255,.04);line-height:1;margin-bottom:.5rem}
+.project-card-title{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:.7rem;line-height:1.2}
+.project-card-desc{font-size:.82rem;color:var(--text2);line-height:1.65;margin-bottom:1.2rem}
+.project-card-metrics{display:flex;gap:1.5rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--glass-border)}
+.pcm{text-align:left}
+.pcm-val{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text)}
+.pcm-label{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.1rem}
+.project-card-impact{font-size:.78rem;color:var(--green);font-weight:500;margin-bottom:1rem}
 .project-card-tags{display:flex;flex-wrap:wrap;gap:.35rem}
-.project-card-tag{padding:.15rem .5rem;border-radius:3px;font-size:.6rem;font-family:'JetBrains Mono',monospace;color:var(--text3);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
+.project-card-tag{padding:.2rem .55rem;border-radius:4px;font-size:.6rem;font-family:'JetBrains Mono',monospace;color:var(--text3);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)}
 
 /* ─── ABOUT ─── */
 .about-section{padding:8rem 6%;background:var(--bg2)}
@@ -233,7 +219,7 @@ footer{background:var(--bg);border-top:1px solid var(--glass-border);padding:1.5
   nav{padding:1rem 5%}.nav-links{display:none}
   .avatar-container{width:300px;height:340px}
   .skills-mosaic{grid-template-columns:1fr}.skill-tile.big{grid-column:span 1}
-  .exp-card{flex:0 0 90vw}.project-card{flex:0 0 90vw}
+  .exp-card{flex:0 0 88vw}.project-card{flex:0 0 88vw}
 }
 </style>
 </head>
@@ -327,21 +313,138 @@ footer{background:var(--bg);border-top:1px solid var(--glass-border);padding:1.5
   </div>
 </section>
 
-<!-- ══════════ PROJECTS ══════════ -->
+<!-- ══════════ PROJECTS — Swipeable ══════════ -->
 <section class="projects-section" id="projects">
-  <div style="padding:0 6%"><div class="section-label">Signature Work</div><div class="section-title" style="margin-bottom:2.5rem">Projects That Moved the Needle</div></div>
-  <div class="project-featured">
-    <div class="project-hero-card">
-      <div class="project-hero-left"><div class="project-hero-badge">&#9733; Featured Project</div><div class="project-hero-title">Zero-Downtime K8s Fleet Upgrade</div><div class="project-hero-desc">Orchestrated rolling upgrades across 3 production EKS clusters with GPU workloads. Pre-validated staging, risk runbooks, 3 critical risks mitigated. Now the org standard.</div><div class="project-hero-stats"><div class="project-stat"><div class="project-stat-num">3</div><div class="project-stat-label">EKS Clusters</div></div><div class="project-stat"><div class="project-stat-num">70+</div><div class="project-stat-label">Deployments</div></div><div class="project-stat"><div class="project-stat-num">37+</div><div class="project-stat-label">Nodes</div></div><div class="project-stat"><div class="project-stat-num">0</div><div class="project-stat-label">Downtime</div></div></div></div>
-      <div class="project-hero-right"><div class="project-hero-terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-bar-title">k8s-upgrade.sh</span></div><div class="term-body"><div><span class="t-p">$ </span><span class="t-c">./upgrade.sh --cluster uh-prod</span></div><div class="t-cmt"># Pre-flight checks...</div><div><span class="t-s">&#10003;</span> <span class="t-o">Staging validated</span></div><div><span class="t-s">&#10003;</span> <span class="t-o">Karpenter NodePools migrated</span></div><div><span class="t-s">&#10003;</span> <span class="t-o">GPU workloads drained</span></div><div><span class="t-s">&#10003;</span> <span class="t-o">Rolling update: 37/37 nodes</span></div><div><span class="t-s">&#10003;</span> <span class="t-o">ArgoCD sync verified</span></div><div style="margin-top:.5rem"><span class="t-k">Complete.</span> <span class="t-v">Downtime: 0s</span></div></div></div></div>
-    </div>
+  <div style="padding:0 6%;margin-bottom:2rem">
+    <div class="section-label">Signature Work</div>
+    <div class="section-title">Projects That Moved the Needle</div>
+    <p style="color:var(--text3);font-size:.85rem;margin-top:.5rem">Drag to explore &rarr;</p>
   </div>
   <div class="project-row" id="projRow">
-    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--purple),var(--cyan))"><div class="project-card-body"><div class="project-card-icon">&#129302;</div><div class="project-card-title">Greenfield ML Platform</div><div class="project-card-desc">End-to-end infra for AI team — CI/CD, autoscaling 3&rarr;10, dual staging. Zero to production.</div><div class="project-card-impact">&#10003; 0 &rarr; Prod in record time</div><div class="project-card-tags"><span class="project-card-tag">AWS</span><span class="project-card-tag">Terraform</span><span class="project-card-tag">KEDA</span><span class="project-card-tag">IRSA</span></div></div></div>
-    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--green),var(--cyan))"><div class="project-card-body"><div class="project-card-icon">&#127758;</div><div class="project-card-title">International Cloud Expansion</div><div class="project-card-desc">New AWS region — RDS, Redis, OpenSearch, Prometheus/VictoriaMetrics monitoring from scratch.</div><div class="project-card-impact">&#10003; Backend teams unblocked day one</div><div class="project-card-tags"><span class="project-card-tag">Multi-Region</span><span class="project-card-tag">RDS</span><span class="project-card-tag">Prometheus</span><span class="project-card-tag">VM</span></div></div></div>
-    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--orange),var(--red))"><div class="project-card-body"><div class="project-card-icon">&#128301;</div><div class="project-card-title">Observability Pipeline Redesign</div><div class="project-card-desc">Vector + OpenSearch — 26 per-app structured indexes, field-level querying across all teams.</div><div class="project-card-impact">&#10003; 26 structured indexes deployed</div><div class="project-card-tags"><span class="project-card-tag">Vector</span><span class="project-card-tag">OpenSearch</span><span class="project-card-tag">Grafana</span></div></div></div>
-    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--cyan),var(--green))"><div class="project-card-body"><div class="project-card-icon">&#128260;</div><div class="project-card-title">OCI Fleet Patching</div><div class="project-card-desc">Multi-region automated patching — Python, Terraform, telemetry, 150+ escalations resolved.</div><div class="project-card-impact">&#10003; Manual &rarr; Repeatable pipeline</div><div class="project-card-tags"><span class="project-card-tag">OCI</span><span class="project-card-tag">Python</span><span class="project-card-tag">Terraform</span><span class="project-card-tag">Ansible</span></div></div></div>
-    <div class="project-card" style="--card-accent:linear-gradient(90deg,var(--purple),var(--orange))"><div class="project-card-body"><div class="project-card-icon">&#128256;</div><div class="project-card-title">GitOps at Visa</div><div class="project-card-desc">Org-wide GitOps — Helm, K8s, security scanning, team enablement and training.</div><div class="project-card-impact">&#10003; Org-wide adoption achieved</div><div class="project-card-tags"><span class="project-card-tag">GitOps</span><span class="project-card-tag">ArgoCD</span><span class="project-card-tag">Helm</span><span class="project-card-tag">Jenkins</span></div></div></div>
+
+    <!-- Card 1 -->
+    <div class="project-card" style="--card-accent:linear-gradient(135deg,#a78bfa,#f59e0b)">
+      <div class="project-card-body">
+        <div class="project-card-num">01</div>
+        <div class="project-card-title">Zero-Downtime K8s Fleet Upgrade</div>
+        <div class="project-card-desc">Upgraded 3 production EKS clusters — 37+ nodes, 70+ deployments, live GPU workloads — without a single second of downtime. Built a pre-validated staging environment that caught 3 critical risks before they hit prod. The runbooks became the company standard for all future upgrades.</div>
+        <div class="project-card-metrics">
+          <div class="pcm"><div class="pcm-val">3</div><div class="pcm-label">Clusters</div></div>
+          <div class="pcm"><div class="pcm-val">70+</div><div class="pcm-label">Deployments</div></div>
+          <div class="pcm"><div class="pcm-val">0s</div><div class="pcm-label">Downtime</div></div>
+        </div>
+        <div class="project-card-impact">Now the org-wide standard for K8s upgrades</div>
+        <div class="project-card-tags"><span class="project-card-tag">EKS</span><span class="project-card-tag">Karpenter</span><span class="project-card-tag">ArgoCD</span><span class="project-card-tag">GPU</span><span class="project-card-tag">Runbooks</span></div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="project-card" style="--card-accent:linear-gradient(135deg,#34d399,#a78bfa)">
+      <div class="project-card-body">
+        <div class="project-card-num">02</div>
+        <div class="project-card-title">Greenfield ML Platform — Zero to Production</div>
+        <div class="project-card-desc">Took an AI product team from literally nothing to a fully operational production ML platform. Multi-environment CI/CD pipelines, autoscaling from 3 to 10 replicas under load, IAM with ML-specific service access, and dual isolated staging environments — all from scratch.</div>
+        <div class="project-card-metrics">
+          <div class="pcm"><div class="pcm-val">0&rarr;1</div><div class="pcm-label">From scratch</div></div>
+          <div class="pcm"><div class="pcm-val">3&rarr;10</div><div class="pcm-label">Auto-scale</div></div>
+          <div class="pcm"><div class="pcm-val">2</div><div class="pcm-label">Staging envs</div></div>
+        </div>
+        <div class="project-card-impact">AI team went from blocked to shipping in weeks</div>
+        <div class="project-card-tags"><span class="project-card-tag">AWS</span><span class="project-card-tag">Terraform</span><span class="project-card-tag">KEDA</span><span class="project-card-tag">IRSA</span><span class="project-card-tag">APM</span></div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="project-card" style="--card-accent:linear-gradient(135deg,#f59e0b,#ef4444)">
+      <div class="project-card-body">
+        <div class="project-card-num">03</div>
+        <div class="project-card-title">International Cloud Expansion</div>
+        <div class="project-card-desc">Deployed an entire production-grade infrastructure stack in a brand new AWS region for Ultrahuman's international expansion. Databases, caching layers, search clusters, and a full Prometheus + VictoriaMetrics monitoring stack — all operational before the backend team even started coding.</div>
+        <div class="project-card-metrics">
+          <div class="pcm"><div class="pcm-val">1</div><div class="pcm-label">New region</div></div>
+          <div class="pcm"><div class="pcm-val">5+</div><div class="pcm-label">Services</div></div>
+          <div class="pcm"><div class="pcm-val">Day 1</div><div class="pcm-label">Unblocked</div></div>
+        </div>
+        <div class="project-card-impact">Backend teams had real endpoints from day one</div>
+        <div class="project-card-tags"><span class="project-card-tag">Multi-Region</span><span class="project-card-tag">RDS</span><span class="project-card-tag">Redis</span><span class="project-card-tag">Prometheus</span><span class="project-card-tag">VictoriaMetrics</span></div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="project-card" style="--card-accent:linear-gradient(135deg,#a78bfa,#34d399)">
+      <div class="project-card-body">
+        <div class="project-card-num">04</div>
+        <div class="project-card-title">Observability Pipeline Redesign</div>
+        <div class="project-card-desc">Ripped out a broken shared logging index and rebuilt the entire observability pipeline from scratch using Vector and OpenSearch. Deployed 26 per-application structured indexes with field-level querying — restoring log visibility that had been broken for months and dramatically cutting debugging time across all engineering teams.</div>
+        <div class="project-card-metrics">
+          <div class="pcm"><div class="pcm-val">26</div><div class="pcm-label">App indexes</div></div>
+          <div class="pcm"><div class="pcm-val">100%</div><div class="pcm-label">Visibility</div></div>
+        </div>
+        <div class="project-card-impact">Debugging time slashed across all eng teams</div>
+        <div class="project-card-tags"><span class="project-card-tag">Vector</span><span class="project-card-tag">OpenSearch</span><span class="project-card-tag">Structured Logging</span><span class="project-card-tag">Grafana</span></div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="project-card" style="--card-accent:linear-gradient(135deg,#ef4444,#f59e0b)">
+      <div class="project-card-body">
+        <div class="project-card-num">05</div>
+        <div class="project-card-title">Production Database Security Hardening</div>
+        <div class="project-card-desc">Discovered that applications were running with owner-level database access in production. Implemented least-privilege user separation, DDL protection triggers, and automated credential rotation — ensuring no app could ever accidentally (or intentionally) drop a table in prod again.</div>
+        <div class="project-card-metrics">
+          <div class="pcm"><div class="pcm-val">0</div><div class="pcm-label">Owner access</div></div>
+          <div class="pcm"><div class="pcm-val">Auto</div><div class="pcm-label">Cred rotation</div></div>
+        </div>
+        <div class="project-card-impact">Zero owner-level app access in production</div>
+        <div class="project-card-tags"><span class="project-card-tag">PostgreSQL</span><span class="project-card-tag">IAM</span><span class="project-card-tag">Secrets Manager</span><span class="project-card-tag">DDL Protection</span></div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="project-card" style="--card-accent:linear-gradient(135deg,#34d399,#f59e0b)">
+      <div class="project-card-body">
+        <div class="project-card-num">06</div>
+        <div class="project-card-title">OCI Multi-Region Fleet Patching</div>
+        <div class="project-card-desc">At Oracle, transformed a painful manual patching process into a fully automated multi-region pipeline using Python, OCI SDK, and Terraform. Built telemetry-based health monitoring on top. Personally resolved 150+ on-call escalations while maintaining SLA adherence — and documented every pattern to prevent recurrence.</div>
+        <div class="project-card-metrics">
+          <div class="pcm"><div class="pcm-val">150+</div><div class="pcm-label">Escalations</div></div>
+          <div class="pcm"><div class="pcm-val">35%</div><div class="pcm-label">Compliance up</div></div>
+        </div>
+        <div class="project-card-impact">Manual process &rarr; Automated pipeline</div>
+        <div class="project-card-tags"><span class="project-card-tag">OCI</span><span class="project-card-tag">Python</span><span class="project-card-tag">Terraform</span><span class="project-card-tag">OCI Vault</span><span class="project-card-tag">Ansible</span></div>
+      </div>
+    </div>
+
+    <!-- Card 7 -->
+    <div class="project-card" style="--card-accent:linear-gradient(135deg,#a78bfa,#ef4444)">
+      <div class="project-card-body">
+        <div class="project-card-num">07</div>
+        <div class="project-card-title">Org-Wide GitOps Transformation at Visa</div>
+        <div class="project-card-desc">Led Visa's engineering org through a complete shift from manual deployments to GitOps-based infrastructure management. Implemented Helm-based K8s deployments, security scanning in CI/CD pipelines, and ran hands-on training sessions across the org. Deployment consistency and release traceability improved measurably.</div>
+        <div class="project-card-metrics">
+          <div class="pcm"><div class="pcm-val">Org</div><div class="pcm-label">Wide</div></div>
+          <div class="pcm"><div class="pcm-val">100%</div><div class="pcm-label">Adoption</div></div>
+        </div>
+        <div class="project-card-impact">Every team shipping through GitOps</div>
+        <div class="project-card-tags"><span class="project-card-tag">GitOps</span><span class="project-card-tag">ArgoCD</span><span class="project-card-tag">Helm</span><span class="project-card-tag">Jenkins</span><span class="project-card-tag">Security Scanning</span></div>
+      </div>
+    </div>
+
+    <!-- Card 8 -->
+    <div class="project-card" style="--card-accent:linear-gradient(135deg,#f59e0b,#a78bfa)">
+      <div class="project-card-body">
+        <div class="project-card-num">08</div>
+        <div class="project-card-title">Karpenter NodePool Architecture</div>
+        <div class="project-card-desc">Designed and deployed reusable Karpenter NodePools at Ultrahuman that eliminated critical job failures caused by Spot instance interruptions. Also automated cleanup of 4,600+ stale cloud resources and expanded automated backup coverage across all production databases.</div>
+        <div class="project-card-metrics">
+          <div class="pcm"><div class="pcm-val">4,600+</div><div class="pcm-label">Stale cleaned</div></div>
+          <div class="pcm"><div class="pcm-val">0</div><div class="pcm-label">Spot failures</div></div>
+        </div>
+        <div class="project-card-impact">No more 3AM pages from Spot interruptions</div>
+        <div class="project-card-tags"><span class="project-card-tag">Karpenter</span><span class="project-card-tag">EKS</span><span class="project-card-tag">Spot</span><span class="project-card-tag">Automation</span></div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -555,8 +658,7 @@ addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('s
 /* ── GSAP SCROLL ANIMATIONS ── */
 gsap.utils.toArray('.exp-card').forEach((c,i)=>{gsap.from(c,{scrollTrigger:{trigger:'.hscroll-track',start:'top 80%'},x:80,opacity:0,duration:.8,delay:i*.12,ease:'power3.out'})});
 gsap.utils.toArray('.skill-tile').forEach((t,i)=>{gsap.from(t,{scrollTrigger:{trigger:t,start:'top 85%'},y:50,opacity:0,duration:.7,delay:i*.08,ease:'power3.out'})});
-gsap.from('.project-hero-card',{scrollTrigger:{trigger:'.project-hero-card',start:'top 80%'},y:60,opacity:0,duration:1,ease:'power3.out'});
-gsap.utils.toArray('.project-card').forEach((c,i)=>{gsap.from(c,{scrollTrigger:{trigger:'.project-row',start:'top 80%'},x:60,opacity:0,duration:.8,delay:i*.1,ease:'power3.out'})});
+gsap.utils.toArray('.project-card').forEach((c,i)=>{gsap.from(c,{scrollTrigger:{trigger:'.project-row',start:'top 80%'},x:80,opacity:0,duration:.8,delay:i*.1,ease:'power3.out'})});
 gsap.utils.toArray('.edu-item').forEach((e,i)=>{gsap.from(e,{scrollTrigger:{trigger:e,start:'top 85%'},x:-30,opacity:0,duration:.6,delay:i*.1,ease:'power3.out'})});
 gsap.utils.toArray('.comp-tag').forEach((c,i)=>{gsap.from(c,{scrollTrigger:{trigger:'.competency-cloud',start:'top 85%'},y:20,opacity:0,duration:.4,delay:i*.03,ease:'power2.out'})});
 gsap.from('.contact-title',{scrollTrigger:{trigger:'.contact-section',start:'top 75%'},y:40,opacity:0,duration:.8});
